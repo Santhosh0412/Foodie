@@ -1,338 +1,488 @@
-<div align="center">
+# 🍔 Foodie – Online Food Delivery Application
 
-# 🍽️ Zomato Clone — Full-Stack Food Delivery App
+Foodie is a Zomato/Swiggy-inspired online food delivery application developed using **Java and Spring Boot**. The application allows customers to discover restaurants, view menus, manage their cart, place orders, make payments, and manage delivery locations.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java&logoColor=white" />
-  <img src="https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" />
-  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Maven-3.9-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" />
-  <img src="https://img.shields.io/badge/HTML%2FJS-Frontend-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
-  <img src="https://img.shields.io/badge/Lombok-1.18-blueviolet?style=for-the-badge" />
-</p>
-
-<p align="center">
-  A production-ready, full-stack <strong>food delivery platform</strong> inspired by Zomato.<br/>
-  Features a <strong>Spring Boot REST API</strong>, an <strong>Admin Partner Panel</strong>, and a <strong>Consumer Storefront</strong> with GPS-based nearby restaurant discovery.<br/>
-  🚀 <strong>Status: 100% Completed &amp; Fully Synchronized — Frontend ↔ Backend</strong><br/>
-  Built with <strong>Spring Boot</strong>, <strong>JPA/Hibernate</strong>, <strong>MySQL</strong>, and <strong>Vanilla JS</strong> as part of an advanced Java learning project.
-</p>
-
-</div>
+The application follows a **layered architecture** using Controller, Service, Repository, and Entity layers.
 
 ---
 
-## 📌 Table of Contents
+## 📌 Project Overview
 
-- [✨ Features](#-features)
-- [🏗️ Project Architecture](#️-project-architecture)
-- [🗂️ Entity Model](#️-entity-model)
-- [🔗 API Endpoints](#-api-endpoints)
-- [⚙️ Tech Stack](#️-tech-stack)
-- [🚀 Getting Started](#-getting-started)
-- [🛠️ Configuration](#️-configuration)
-- [📁 Project Structure](#-project-structure)
-- [🤝 Contributing](#-contributing)
+The main objective of Foodie is to provide an online platform where customers can:
 
----
+- Register and log in
+- Browse restaurants
+- View restaurant menus
+- Add food items to a cart
+- Place food orders
+- Make online payments
+- Manage delivery locations
+- Track order status
 
-## ✨ Features
-
-- 🏪 **Restaurant Management** — Register and manage restaurants with address mapping
-- 🍕 **Menu Item Management** — Add menu items with variants, ratings, and types (VEG/NON-VEG)
-- 🧹 **Full CRUD & Soft Delete** — Fully functional `DELETE` endpoints for restaurants, menu items, and variants. Records are soft-deleted using Hibernate's `@SoftDelete`
-- 🕒 **Audit Timestamps** — Automatic creation timestamps (`createdAt` / `userAccountCreatedTime`) on all entities via `@CreationTimestamp`, dynamically rendered in the UI.
-- 📦 **Inventory Management** — Track stock limits (`inventoryManaged`, `currentAvailableInventoryCount`) seamlessly through the DTOs to the DB.
-- ✅ **Request Validation & Error Handling** — Full input validation using `spring-boot-starter-validation`. The frontend smartly parses ugly JSON backend errors into clean, responsive UI toasts!
-- 🏛️ **Layered Architecture** — Clean separation between Controller → Service → Repository → Entity layers
-- 🎨 **Admin Panel Frontend** — Includes a fully-responsive light-theme frontend built with Zomato aesthetics to view dashboards, track inventory, execute CRUD operations, and manage complex menu items.
-- 🍔 **Consumer-Facing App** — A stunning, real-world customer UI (`consumer.html`) featuring a hero search banner, live filtering (All/Veg/Non-Veg), promotional offer tags, and beautiful slide-up restaurant menus with intelligent food image mapping (using Unsplash photography) synced seamlessly with the backend.
+The application also provides functionality for restaurant and admin management.
 
 ---
 
-## 🏗️ Project Architecture
+## 👥 Major Modules
 
-```
-Client (Postman / Frontend)
-         │
-         ▼
-  ┌─────────────┐
-  │  Controller  │  ← REST endpoints, request validation
-  └──────┬──────┘
-         │
-  ┌──────▼──────┐
-  │   Service    │  ← Business logic
-  └──────┬──────┘
-         │
-  ┌──────▼──────┐
-  │ Repository   │  ← Spring Data JPA (CRUD)
-  └──────┬──────┘
-         │
-  ┌──────▼──────┐
-  │  MySQL DB    │  ← Persistent storage
-  └─────────────┘
-```
+### 1. Customer Module
+
+Customers can:
+
+- Register and log in
+- Browse restaurants
+- Search/view restaurants
+- View menus
+- Select food items
+- Manage cart items
+- Place orders
+- Make payments
+- Manage delivery location
+
+### 2. Restaurant Module
+
+Restaurant owners can:
+
+- Manage restaurant information
+- Add menu items
+- Update menu items
+- Manage menu variants
+- Manage food availability/inventory
+
+### 3. Admin Module
+
+The Admin is responsible for managing the overall application and its data.
+
+Admin functionality includes:
+
+- Managing users
+- Managing restaurants
+- Managing application data
+- Monitoring overall system operations
 
 ---
 
-## 🗂️ Entity Model
+## 🏗️ Architecture
 
-```
-Base (MappedSuperclass)
- ├── id (Auto-generated PK)
- └── createdAt (Auto timestamp)
+Foodie follows a layered backend architecture:
 
-Restaurant ──────────── extends Base
- ├── restaurantName
- ├── restaurantPhoneNumber (unique)
- ├── restaurantAddress   ──→ Address (OneToOne)
- └── menuItemList        ──→ List<MenuItem> (OneToMany)
-
-MenuItem ────────────── extends Base
- ├── menuItemName
- ├── menuItemDescription
- ├── menuItemType        ──→ MenuItemType (VEG / NON_VEG)
- ├── menuItemRating
- ├── menuItemLabel
- ├── menuItemVariantList ──→ List<MenuItemVariant> (OneToMany)
- └── restaurant          ──→ Restaurant (ManyToOne)
-
-Address ─────────────── standalone entity
-User ───────────────── standalone entity
+```text
+                    Frontend
+                       |
+                       ↓
+                REST API / HTTP
+                       |
+                       ↓
+                 Controller
+                       |
+                       ↓
+                   Service
+                       |
+                       ↓
+                  Repository
+                       |
+                       ↓
+                JPA / Hibernate
+                       |
+                       ↓
+                    MySQL
 ```
 
----
+### Controller Layer
 
-## 🔗 API Endpoints
+Handles incoming HTTP requests and sends responses to the client.
 
-### 🏪 Restaurant
+### Service Layer
 
-| Method | Endpoint         | Description           | Body / Response          |
-|--------|------------------|-----------------------|--------------------------|
-| `POST` | `/restaurant`    | Register a restaurant | Req: `RestaurantRequestDTO`  |
-| `GET`  | `/restaurant`    | Get all restaurants   | Res: `List<RestaurantResponseDTO>` |
-| `GET`  | `/restaurant/{id}`| Get specific restaurant| Res: `RestaurantResponseDTO` |
-| `PUT`  | `/restaurant/{id}`| Update restaurant     | Req: `RestaurantRequestDTO` |
-| `DELETE`| `/restaurant/{id}`| Delete a restaurant   | Res: `String`              |
-| `GET`  | `/restaurant/getRestaurantToUser` | Get nearby restaurants by GPS | Query: `userLon`, `userLat` |
+Contains the application's business logic and validations.
 
-### 🍕 Menu Item
+### Repository Layer
 
-| Method   | Endpoint           | Description          | Body / Response            |
-|----------|--------------------|----------------------|----------------------------|
-| `POST`   | `/menuItem`        | Add a menu item      | Req: `MenuItemRequestDTO`  |
-| `PUT`    | `/menuItem/{id}`   | Update a menu item   | Req: `MenuItemRequestDTO`  |
-| `DELETE` | `/menuItem/{id}`   | Delete a menu item   | Res: `String`              |
+Handles database operations using Spring Data JPA.
 
-### 🏷️ Menu Item Variant
+### Entity Layer
 
-| Method | Endpoint                | Description               | Body / Response                                  |
-|--------|-------------------------|---------------------------|--------------------------------------------------|
-| `PUT`  | `/menuItemVariant/{id}` | Update a menu item variant| Req: `CombineMenuItemAndMenuItemVariantRequestDTO` |
-| `DELETE`| `/menuItemVariant/{id}`| Delete a menu item variant| Res: `String` (Guards last remaining variant)    |
-
-### 👤 User & Address Management
-
-| Method | Endpoint         | Description           | Body / Response          |
-|--------|------------------|-----------------------|--------------------------|
-| `POST` | `/user`          | Add a new user        | Req: `UserRequestDTO`    |
-| `GET`  | `/user`          | Get all users         | Res: `List<UserResponseDTO>` |
-| `GET`  | `/user/{id}`     | Get user by ID        | Res: `UserResponseDTO`   |
-| `PUT`  | `/user/{id}`     | Update user details   | Req: `UserRequestDTO`    |
-| `DELETE`| `/user/{id}`     | Delete a user         | Res: `String`            |
-| `POST` | `/address/{userId}` | Add delivery address to user | Req: `AddressRequestDTO` |
-
-> 💡 `POST` and `PUT` endpoints return `HTTP 201 Created` on success. `GET` and `DELETE` return `HTTP 200 OK`. Full input validation is backed by Hibernate Validator and managed through custom Exception Handlers.
+Represents the application's database entities and their relationships.
 
 ---
 
-## ⚙️ Tech Stack
+## 🛠️ Technologies Used
 
-| Technology                     | Version  | Purpose                              |
-|--------------------------------|----------|--------------------------------------|
-| Java                           | 17       | Core programming language            |
-| Spring Boot                    | 4.1.0    | Application framework                |
-| Spring Data JPA / Hibernate    | —        | ORM & database interaction           |
-| Spring Web MVC                 | —        | REST API layer                       |
-| Spring Boot Validation         | —        | Request body validation              |
-| SpringDoc OpenAPI / Swagger    | 3.1.0    | API Documentation (Swagger UI)       |
-| MySQL                          | 8.x      | Relational database                  |
-| Lombok                         | 1.18.46  | Boilerplate reduction (getters, etc) |
-| Apache Commons Lang3           | 3.20.0   | Utility library                      |
-| Maven                          | 3.x      | Build and dependency management      |
+### Backend
+
+- Java
+- Spring Boot
+- Spring MVC
+- REST APIs
+- Spring Data JPA
+- Hibernate
+- Spring Security
+- JWT
+
+### Frontend
+
+- HTML
+- CSS
+- JavaScript
+- Bootstrap
+
+### Database
+
+- MySQL
+
+### Development & Testing
+
+- IntelliJ IDEA / Eclipse
+- VS Code
+- Maven
+- Git / GitHub
+- Postman
+
+### Additional Integrations
+
+- Payment Gateway Integration
+- Map / Location Integration
 
 ---
 
-## 🚀 Getting Started
+## 🔐 Authentication & Authorization
+
+Spring Security and JWT are used for securing the application.
+
+### Authentication Flow
+
+```text
+User Login
+    ↓
+Credentials Validation
+    ↓
+Authentication Successful
+    ↓
+JWT Token Generated
+    ↓
+Token Sent to Client
+    ↓
+Client Sends JWT with Requests
+    ↓
+Server Validates Token
+    ↓
+Protected API Access
+```
+
+Role-based authorization can be used to provide different permissions to:
+
+- Customer
+- Restaurant Owner
+- Admin
+
+---
+
+## 🔄 REST API Flow
+
+Example: Adding a Restaurant
+
+```text
+Frontend
+   ↓
+POST /restaurant
+   ↓
+RestaurantController
+   ↓
+RestaurantService
+   ↓
+RestaurantRepository
+   ↓
+Hibernate / JPA
+   ↓
+MySQL
+```
+
+The response is then returned back to the frontend as JSON.
+
+---
+
+## 🗄️ Database
+
+MySQL is used as the relational database.
+
+The application uses JPA/Hibernate to map Java entities to database tables.
+
+Example entity relationships:
+
+```text
+Restaurant
+    |
+    ├── Address
+    |
+    └── Menu Items
+          |
+          └── Menu Variants
+```
+
+Common relationship types used in the application include:
+
+- One-to-One
+- One-to-Many
+- Many-to-One
+
+---
+
+## 🍕 Order Workflow
+
+The general order workflow is:
+
+```text
+Select Restaurant
+       ↓
+View Menu
+       ↓
+Select Food Items
+       ↓
+Add to Cart
+       ↓
+Checkout
+       ↓
+Payment
+       ↓
+Payment Verification
+       ↓
+Order Confirmation
+       ↓
+Order Processing
+       ↓
+Delivery
+```
+
+An order should be confirmed only after successful payment verification.
+
+---
+
+## 💳 Payment
+
+The application includes payment integration as part of the order workflow.
+
+The basic flow is:
+
+```text
+Create Order
+     ↓
+Initiate Payment
+     ↓
+Payment Gateway
+     ↓
+Payment Verification
+     ↓
+Successful → Confirm Order
+     ↓
+Failed → Payment Failed / Retry
+```
+
+---
+
+## 📍 Location / Map Integration
+
+The application supports location-related functionality using map/location integration.
+
+Location information such as **latitude and longitude** can be used for delivery location management and location-based restaurant discovery.
+
+---
+
+## ✅ Validation & Exception Handling
+
+The application uses validation to verify incoming request data.
+
+Exception handling is used for situations such as:
+
+- Invalid requests
+- Resource not found
+- Duplicate records
+- Database-related errors
+- Authentication/authorization errors
+
+Global exception handling can be used to return meaningful API responses instead of exposing internal application errors.
+
+---
+
+## 🧪 API Testing
+
+REST APIs can be tested using **Postman**.
+
+The following HTTP methods are used:
+
+| Method | Purpose |
+|---|---|
+| GET | Retrieve data |
+| POST | Create data |
+| PUT | Update data |
+| DELETE | Delete data |
+
+Example:
+
+```text
+GET     → Get restaurants
+POST    → Add restaurant
+PUT     → Update restaurant
+DELETE  → Delete restaurant
+```
+
+---
+
+## 🚀 How to Run the Project
 
 ### Prerequisites
 
-Make sure you have the following installed:
+Install:
 
-- ☕ [Java 17+](https://adoptium.net/)
-- 🗃️ [MySQL 8.x](https://dev.mysql.com/downloads/)
-- 🔨 [Maven 3.x](https://maven.apache.org/download.cgi) (or use the bundled `mvnw`)
+- Java
+- Maven
+- MySQL
+- IDE such as IntelliJ IDEA or Eclipse
+- Postman
 
-### Installation
+### Step 1 – Clone the Repository
 
-**1. Clone the repository**
 ```bash
-git clone https://github.com/Shivansh1146/ZomatoProject.git
-cd ZomatoProject/Project
+git clone <your-github-repository-url>
 ```
 
-**2. Create the MySQL database**
-```sql
-CREATE DATABASE zomato_db;
+### Step 2 – Open the Project
+
+Open the project in IntelliJ IDEA or another Java IDE.
+
+### Step 3 – Configure MySQL
+
+Create a MySQL database and update the database configuration in:
+
+```text
+src/main/resources/application.properties
 ```
 
-**3. Configure application properties**
+Example:
 
-Edit `src/main/resources/application.properties`:
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/zomato_db
+spring.datasource.url=jdbc:mysql://localhost:3306/foodie
 spring.datasource.username=root
 spring.datasource.password=your_password
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 ```
 
-**4. Build the project**
+Use your actual database username and password.
+
+### Step 4 – Install Dependencies
+
+Using Maven:
+
 ```bash
-./mvnw clean install
+mvn clean install
 ```
 
-**5. Run the Backend Application**
-You can run the backend directly from your IDE (like IntelliJ or Eclipse), or use the terminal:
+### Step 5 – Run the Application
+
+Run the Spring Boot main class from your IDE.
+
+Or use:
+
 ```bash
-# Ensure you are in the Project directory
-cd ZomatoProject/Project
-
-# Run the Spring Boot application
-./mvnw spring-boot:run
-```
-*(The backend will start and listen on **`http://localhost:9090`**)*
-
-**6. Access Swagger UI**
-Once the backend is running, you can interact with the APIs directly via Swagger UI at:
-👉 **`http://localhost:9090/swagger-ui/index.html`**
-
-**7. Run the Frontend Applications (Admin & Consumer)**
-To view the frontends, you must serve the HTML/JS files using a simple HTTP server (this avoids CORS and file:// protocol issues).
-
-Open a **new, separate terminal window**:
-```bash
-# Navigate to the frontend directory
-cd ZomatoProject/frontend
-
-# Start a local Python HTTP server
-python -m http.server 3000
+mvn spring-boot:run
 ```
 
-**8. Open the Apps in your Browser**
-With both the backend and frontend servers running, open your browser and navigate to:
-- 🍔 **Customer App (Ordering):** [http://localhost:3000/consumer.html](http://localhost:3000/consumer.html)
-- 🛠️ **Admin Panel (Management):** [http://localhost:3000/index.html](http://localhost:3000/index.html)
+### Step 6 – Test APIs
+
+Open Postman and send requests to the application's configured API URL.
+
+Example:
+
+```text
+http://localhost:8080/
+```
+
+Use the actual port configured in your project.
 
 ---
 
-## 🛠️ Configuration
+## 📂 Project Structure
 
-| Property                        | Default                               | Description                   |
-|---------------------------------|---------------------------------------|-------------------------------|
-| `server.port`                   | `9090`                                | Application port              |
-| `spring.datasource.url`         | `jdbc:mysql://localhost:3306/zomato_db` | Database URL                |
-| `spring.jpa.hibernate.ddl-auto` | `update`                              | Schema strategy               |
-| `spring.jpa.show-sql`           | `true`                                | Print SQL to console          |
-
----
-
-## 📁 Project Structure
-
-```
-ZomatoProject/
-├── Project/                      # Spring Boot Backend
-│   ├── src/main/java/Zomato/Project/
-│   │   ├── controller/
-│   │   │   ├── RestaurantController.java    (POST, GET, PUT, DELETE + GPS nearby)
-│   │   │   ├── MenuItemController.java      (POST, PUT, DELETE)
-│   │   │   ├── MenuItemVariantController.java (PUT, DELETE)
-│   │   │   ├── UserController.java          (POST, GET, PUT, DELETE)
-│   │   │   └── AddressController.java       (POST)
-│   │   ├── service/
-│   │   │   ├── RestaurantService.java
-│   │   │   ├── MenuItemService.java
-│   │   │   ├── MenuItemVariantService.java
-│   │   │   ├── UserService.java
-│   │   │   └── AddressService.java
-│   │   ├── repository/
-│   │   │   ├── RestaurantRepository.java    (incl. native GPS query)
-│   │   │   ├── MenuItemRepository.java
-│   │   │   ├── MenuItemVariantRepository.java
-│   │   │   ├── UserRepository.java
-│   │   │   └── AddressRepository.java
-│   │   ├── entity/
-│   │   │   ├── Base.java           (MappedSuperclass: id, createdAt)
-│   │   │   ├── Restaurant.java
-│   │   │   ├── MenuItem.java
-│   │   │   ├── MenuItemVariant.java
-│   │   │   ├── Address.java
-│   │   │   └── User.java
-│   │   ├── dto/
-│   │   │   ├── RestaurantRequestDTO.java
-│   │   │   ├── RestaurantResponseDTO.java
-│   │   │   ├── MenuItemRequestDTO.java
-│   │   │   ├── MenuItemResponseDTO.java
-│   │   │   ├── MenuItemVariantRequestDTO.java
-│   │   │   ├── MenuItemVariantResponseDTO.java
-│   │   │   ├── CombineMenuItemAndMenuItemVariantRequestDTO.java
-│   │   │   ├── UserRequestDTO.java
-│   │   │   ├── UserResponseDTO.java
-│   │   │   ├── AddressRequestDTO.java
-│   │   │   └── ErrorDTO.java
-│   │   ├── enums/
-│   │   │   └── MenuItemType.java   (VEG, NONVEG)
-│   │   ├── exception/
-│   │   │   ├── GlobalExceptionHandler.java
-│   │   │   ├── AlreadyExistException.java
-│   │   │   ├── ResourceNotFoundException.java
-│   │   │   └── InvalidRequestException.java
-│   │   └── ProjectApplication.java
-│   └── src/main/resources/
-│       └── application.properties
-├── frontend/
-│   ├── index.html        # 🛠️ Admin / Partner Panel
-│   ├── app_v2.js         # Admin Panel – all API calls, validations, modals
-│   ├── consumer.html     # 🍔 Customer Ordering Storefront
-│   ├── consumer.js       # Customer Logic – search, filters, GPS, menu overlay
-│   ├── style.css         # Admin Panel Styles
-│   ├── logo.png          # Zomato logo asset
-│   ├── food-banner.png   # Hero banner image
-│   └── test_apis.js      # Node.js full API test suite (27/28 tests pass)
-├── README.md
-└── .gitignore
+```text
+Foodie
+│
+├── src
+│   └── main
+│       ├── java
+│       │   └── ...
+│       │       ├── controller
+│       │       ├── service
+│       │       ├── repository
+│       │       ├── entity
+│       │       ├── dto
+│       │       ├── exception
+│       │       └── config
+│       │
+│       └── resources
+│           └── application.properties
+│
+├── pom.xml
+└── README.md
 ```
 
 ---
 
-## 🤝 Contributing
+## 🎯 Key Features
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
-
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m 'feat: add your feature'`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Open a Pull Request
+- Customer management
+- Restaurant management
+- Admin management
+- Menu management
+- Menu variants
+- Cart management
+- Order management
+- Payment integration
+- JWT authentication
+- Role-based authorization
+- MySQL database
+- REST APIs
+- Location/map integration
+- Validation
+- Exception handling
 
 ---
 
-<div align="center">
-  <p>Made with ❤️ as part of an <strong>Advanced Java</strong> learning journey.</p>
-  <p>
-    <img src="https://img.shields.io/github/last-commit/Shivansh1146/ZomatoProject?style=flat-square" />
-    <img src="https://img.shields.io/github/languages/top/Shivansh1146/ZomatoProject?style=flat-square" />
-  </p>
-</div>
+## 🔮 Future Enhancements
+
+Possible future improvements include:
+
+- Real-time delivery tracking
+- Advanced food recommendations
+- Restaurant ratings and reviews
+- Push notifications
+- Coupon and discount management
+- Improved admin dashboard
+- Advanced analytics
+- Mobile application
+
+---
+
+## 👨‍💻 Project Skills Demonstrated
+
+This project demonstrates practical knowledge of:
+
+- Core Java
+- Object-Oriented Programming
+- Spring Boot
+- REST API development
+- Spring Data JPA
+- Hibernate
+- MySQL
+- Spring Security
+- JWT authentication
+- Database relationships
+- Exception handling
+- API testing
+- Frontend-backend integration
+
+---
+
+## 📌 Project Summary
+
+**Foodie** demonstrates how a real-world food delivery application can be developed using Java and Spring Boot. It combines REST API development, database management, authentication, authorization, order processing, payment integration, and location-based functionality into a single application.
