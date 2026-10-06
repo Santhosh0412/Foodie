@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foodie Partner Panel</title>
+  <meta name="description" content="Foodie Partner Admin Panel — Manage restaurants and menu items." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="auth.js"></script>
+  <script>
+    Auth.protectRoute('ADMIN');
+    window.addEventListener('DOMContentLoaded', () => {
+      Auth.renderUserBadge('admin-header-badge');
+    });
+  </script>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <img src="logo.png" alt="Foodie Logo" class="logo-img" />
+      </div>
+      <div>
+        <div class="logo-text">Foodie</div>
+        <div class="logo-sub">Partner Panel</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Management</div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" id="nav-restaurant" onclick="showPage('restaurant')">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </span>
+        <span>Add Restaurant</span>
+      </button>
+      <button class="nav-item" id="nav-viewrestaurant" onclick="showPage('viewrestaurant')">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <span>View Restaurant</span>
+      </button>
+      <button class="nav-item" id="nav-menuitem" onclick="showPage('menuitem')">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/></svg>
+        </span>
+        <span>Add Menu Item</span>
+      </button>
+      <button class="nav-item" id="nav-user" onclick="showPage('user')">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <span>Manage Users</span>
+      </button>
+      <a class="nav-item" href="consumer.html" style="text-decoration:none; margin-top:12px; border-top:1px solid var(--border); padding-top:12px; color:var(--brand); font-weight:600;">
+        <span class="nav-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </span>
+        <span>Customer View ↗</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="api-status-card" id="api-status">
+        <span class="status-dot" id="status-dot"></span>
+        <div class="status-info">
+          <span class="status-label" id="api-status-text">Checking API…</span>
+          <span class="status-url">localhost:9090</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="breadcrumb" id="breadcrumb">
+          <span class="bc-home">Dashboard</span>
+          <span class="bc-sep">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+          <span id="bc-current">Add Restaurant</span>
+        </div>
+      </div>
+      <div class="topbar-right" id="admin-header-badge"></div>
+    </header>
+
+    <!-- PAGE: ADD RESTAURANT -->
+    <section class="page active" id="page-restaurant">
+
+      <!-- Food Banner Hero -->
+      <div class="food-hero">
+        <img src="food-banner.png" alt="Food" class="food-hero-img" />
+        <div class="food-hero-overlay">
+          <div class="food-hero-content">
+            <span class="hero-badge">🏪 Restaurant Onboarding</span>
+            <h2 class="hero-title">Register a New Restaurant</h2>
+            <p class="hero-desc">Add your restaurant to the Zomato platform and start receiving orders today.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-header">
+        <div class="page-title-row">
+          <div>
+            <h1 class="page-title">Add Restaurant</h1>
+            <p class="page-subtitle">Register a new restaurant partner on the platform</p>
+          </div>
+          <div class="endpoint-badge">
+            <span class="method-badge">POST</span>
+            <code>/restaurant</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-wrapper">
+        <div class="form-layout">
+
+          <!-- LEFT COLUMN -->
+          <div class="form-main">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon card-icon--blue">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                </div>
+                <h2 class="card-title">Basic Information</h2>
+              </div>
+              <form id="form-restaurant" novalidate>
+                <div class="form-grid">
+                  <div class="form-group col-full">
+                    <label for="r-name">Restaurant Name <span class="req">*</span></label>
+                    <input type="text" id="r-name" placeholder="e.g. Pizza Palace" autocomplete="off" />
+                    <span class="field-error" id="err-r-name"></span>
+                  </div>
+                  <div class="form-group col-full">
+                    <label for="r-phone">Phone Number <span class="req">*</span></label>
+                    <div class="input-with-prefix">
+                      <span class="input-prefix">+91</span>
+                      <input type="text" id="r-phone" placeholder="9876543210" maxlength="10" autocomplete="off" />
+                    </div>
+                    <span class="field-hint">10-digit Indian mobile (starts with 6–9)</span>
+                    <span class="field-error" id="err-r-phone"></span>
+                  </div>
+                </div>
+
+                <div class="section-divider">
+                  <span>Address Details</span>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group col-full">
+                    <label for="r-street1">Street Line 1 <span class="req">*</span></label>
+                    <input type="text" id="r-street1" placeholder="e.g. 123, MG Road, Connaught Place" autocomplete="off" />
+                    <span class="field-error" id="err-r-street1"></span>
+                  </div>
+                  <div class="form-group col-full">
+                    <label for="r-street2">Street Line 2 <span class="optional">(optional)</span></label>
+                    <input type="text" id="r-street2" placeholder="e.g. Near City Mall, Landmark" autocomplete="off" />
+                  </div>
+                  <div class="form-group">
+                    <label for="r-pincode">Pin Code <span class="req">*</span></label>
+                    <input type="text" id="r-pincode" placeholder="110001" maxlength="6" autocomplete="off" />
+                    <span class="field-hint">6-digit, cannot start with 0</span>
+                    <span class="field-error" id="err-r-pincode"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="r-state">State <span class="req">*</span></label>
+                    <input type="text" id="r-state" placeholder="e.g. Maharashtra" autocomplete="off" />
+                    <span class="field-error" id="err-r-state"></span>
+                  </div>
+                  <div class="form-group col-full">
+                    <label for="r-country">Country <span class="req">*</span></label>
+                    <input type="text" id="r-country" placeholder="e.g. India" autocomplete="off" />
+                    <span class="field-error" id="err-r-country"></span>
+                  </div>
+                </div>
+
+                <div class="section-divider">
+                  <span>Geo Coordinates</span>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="r-lat">Latitude <span class="req">*</span></label>
+                    <input type="number" id="r-lat" placeholder="e.g. 19.076090" step="any" autocomplete="off" />
+                    <span class="field-hint">Between -90 and 90</span>
+                    <span class="field-error" id="err-r-lat"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="r-lng">Longitude <span class="req">*</span></label>
+                    <input type="number" id="r-lng" placeholder="e.g. 72.877426" step="any" autocomplete="off" />
+                    <span class="field-hint">Between -180 and 180</span>
+                    <span class="field-error" id="err-r-lng"></span>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn-secondary" onclick="autofillData('restaurant')" style="color:var(--brand); border-color:var(--brand);">
+                    🪄 Autofill
+                  </button>
+                  <button type="button" class="btn-secondary" onclick="resetForm('form-restaurant')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.31"/></svg>
+                    Reset
+                  </button>
+                  <button type="submit" class="btn-primary" id="btn-restaurant-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span class="btn-label">Add Restaurant</span>
+                    <span class="btn-spinner hidden" id="spinner-restaurant"></span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- RIGHT SIDEBAR CARD -->
+          <div class="form-aside">
+            <div class="card tips-card">
+              <h3 class="tips-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Quick Tips
+              </h3>
+              <ul class="tips-list">
+                <li>Restaurant name should be unique across the platform.</li>
+                <li>Phone number must be a valid 10-digit Indian mobile starting with 6, 7, 8, or 9.</li>
+                <li>Pin code must be exactly 6 digits and cannot start with 0.</li>
+                <li>Coordinates help customers find your restaurant on the map.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE: VIEW RESTAURANT -->
+    <section class="page" id="page-viewrestaurant">
+      <!-- Food Banner Hero -->
+      <div class="food-hero">
+        <img src="food-banner.png" alt="Food" class="food-hero-img" />
+        <div class="food-hero-overlay">
+          <div class="food-hero-content">
+            <span class="hero-badge">🔍 View Dashboard</span>
+            <h2 class="hero-title">View Restaurant Details</h2>
+            <p class="hero-desc">Search for a restaurant by ID to view its details and add menu items.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-header">
+        <div class="page-title-row">
+          <div>
+            <h1 class="page-title">Restaurant Details</h1>
+            <p class="page-subtitle">Fetch restaurant and menu data</p>
+          </div>
+          <div class="endpoint-badge">
+            <span class="method-badge" style="background: var(--green);">GET</span>
+            <code>/restaurant/{id}</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-wrapper">
+        <div class="form-layout">
+          <!-- LEFT COLUMN -->
+          <div class="form-main">
+            
+            <!-- Search Card (Unchanged) -->
+            <div class="card" style="margin-bottom: 24px;">
+              <div class="card-header" style="margin-bottom: 16px; padding-bottom: 0; border-bottom: none;">
+                <h2 class="card-title">Search Restaurant</h2>
+              </div>
+              <form id="form-search-restaurant" novalidate style="display: flex; gap: 12px; align-items: flex-end;">
+                <div class="form-group" style="flex: 1;">
+                  <label for="search-r-id">Restaurant ID</label>
+                  <input type="number" id="search-r-id" placeholder="e.g. 1" min="1" required autocomplete="off" />
+                </div>
+                <button type="submit" class="btn-primary" id="btn-search-restaurant">
+                  <span class="btn-label">Search</span>
+                  <span class="btn-spinner hidden" id="spinner-search"></span>
+                </button>
+              </form>
+            </div>
+
+            <!-- ALL RESTAURANTS TABLE CARD -->
+            <div class="card" id="all-restaurants-card" style="margin-bottom: 24px;">
+              <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="card-icon card-icon--red">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                  </div>
+                  <h2 class="card-title">All Restaurants</h2>
+                </div>
+                <button type="button" class="btn-secondary" onclick="fetchAllRestaurants()" style="padding: 6px 12px; font-size: 0.75rem;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                  Refresh
+                </button>
+              </div>
+              
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--border); color: var(--text-dim); text-transform: uppercase; font-size: 0.7rem;">
+                      <th style="padding: 12px 8px;">ID</th>
+                      <th style="padding: 12px 8px;">Restaurant Name</th>
+                      <th style="padding: 12px 8px;">Phone</th>
+                      <th style="padding: 12px 8px;">City/State</th>
+                      <th style="padding: 12px 8px; text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="restaurants-tbody">
+                    <!-- Data injected here -->
+                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">Click Refresh to load restaurants (Requires GET /restaurant in backend)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Details Card (Hidden initially) -->
+            <div class="card hidden" id="restaurant-details-card" style="padding: 0; overflow: hidden; border: none; box-shadow: var(--shadow-lg);">
+              <div id="zomato-restaurant-header" style="background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url('food-banner.png') center/cover; padding: 40px 24px 24px; color: #fff; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                  <div>
+                    <h2 id="display-r-name" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 8px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); letter-spacing: -0.5px;">Restaurant Name</h2>
+                    <p id="display-r-location" style="font-size: 0.95rem; opacity: 0.95; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      Location
+                    </p>
+                    <p id="display-r-phone" style="font-size: 0.85rem; opacity: 0.85;">Phone</p>
+                  </div>
+                  <div style="background: #24963F; color: #fff; padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 1.15rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    4.3 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </div>
+                </div>
+              </div>
+              
+              <div style="padding: 32px 24px; background: #fff;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+                  <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    Order Online <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-dim); background: var(--bg-base); padding: 2px 8px; border-radius: 12px;" id="display-m-count">0 items</span>
+                  </h3>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); background: var(--bg-base); padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; font-weight: 500;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    30-40 min
+                  </div>
+                </div>
+
+                <div id="display-m-list" style="display: flex; flex-direction: column; gap: 32px;">
+                  <!-- Menu items injected here -->
+                </div>
+
+                <div style="margin-top: 40px; text-align: center; border-top: 1px dashed var(--border-input); padding-top: 32px;">
+                  <button type="button" class="btn-primary" onclick="navigateToAddMenuItem()" style="border-radius: 24px; padding: 14px 40px; font-size: 1rem; font-weight: 700; box-shadow: 0 8px 20px rgba(226, 55, 68, 0.25); transition: transform 0.2s ease;">
+                    + Add New Menu Item
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          
+          <!-- RIGHT SIDEBAR CARD -->
+          <div class="form-aside">
+            <div class="card tips-card">
+              <h3 class="tips-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Quick Tips
+              </h3>
+              <ul class="tips-list">
+                <li>Search by the unique Restaurant ID generated by the backend.</li>
+                <li>View existing menu items and variants for the restaurant.</li>
+                <li>Quickly jump to add a new menu item for this specific restaurant.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE: ADD MENU ITEM -->
+    <section class="page" id="page-menuitem">
+
+      <!-- Food Banner Hero -->
+      <div class="food-hero">
+        <img src="food-banner.png" alt="Food" class="food-hero-img" />
+        <div class="food-hero-overlay">
+          <div class="food-hero-content">
+            <span class="hero-badge">🍕 Menu Management</span>
+            <h2 class="hero-title">Add a New Dish</h2>
+            <p class="hero-desc">Create mouth-watering menu items with variants, prices, and inventory tracking.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-header">
+        <div class="page-title-row">
+          <div>
+            <h1 class="page-title">Add Menu Item</h1>
+            <p class="page-subtitle">Add a new dish or drink to an existing restaurant</p>
+          </div>
+          <div class="endpoint-badge">
+            <span class="method-badge">POST</span>
+            <code>/menuitem</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-wrapper">
+        <div class="form-layout">
+
+          <!-- LEFT COLUMN -->
+          <div class="form-main">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon card-icon--red">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                </div>
+                <h2 class="card-title">Item Details</h2>
+              </div>
+              <form id="form-menuitem" novalidate>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="m-name">Item Name <span class="req">*</span></label>
+                    <input type="text" id="m-name" placeholder="e.g. Paneer Tikka" autocomplete="off" />
+                    <span class="field-error" id="err-m-name"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="m-label">Label <span class="req">*</span></label>
+                    <input type="text" id="m-label" placeholder="e.g. Bestseller" autocomplete="off" />
+                    <span class="field-hint">Letters and spaces only</span>
+                    <span class="field-error" id="err-m-label"></span>
+                  </div>
+                  <div class="form-group col-full">
+                    <label for="m-description">Description <span class="req">*</span></label>
+                    <input type="text" id="m-description" placeholder="e.g. Spicy grilled cottage cheese with mint chutney" autocomplete="off" />
+                    <span class="field-error" id="err-m-description"></span>
+                  </div>
+                  <div class="form-group">
+                    <label>Item Type <span class="req">*</span></label>
+                    <div class="type-toggle">
+                      <button type="button" class="type-btn active" id="type-veg" onclick="selectType('VEG')">
+                        <span class="veg-dot"></span> VEG
+                      </button>
+                      <button type="button" class="type-btn" id="type-nonveg" onclick="selectType('NONVEG')">
+                        <span class="nonveg-dot"></span> NON-VEG
+                      </button>
+                    </div>
+                    <input type="hidden" id="m-type" value="VEG" />
+                  </div>
+                  <div class="form-group">
+                    <label for="m-restaurant-id">Restaurant ID <span class="req">*</span></label>
+                    <input type="number" id="m-restaurant-id" placeholder="e.g. 1" min="1" autocomplete="off" />
+                    <span class="field-hint">ID of the restaurant this item belongs to</span>
+                    <span class="field-error" id="err-m-restaurant-id"></span>
+                  </div>
+                </div>
+
+                <!-- VARIANTS SECTION -->
+                <div class="section-divider">
+                  <span>Item Variants</span>
+                  <button type="button" class="btn-add-variant" id="btn-add-variant" onclick="addVariant()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add Variant
+                  </button>
+                </div>
+                <p class="variants-hint">At least 1 variant is required (e.g. Regular, Half, Full) — Name and Price (&gt; 0) are required.</p>
+                <div id="variants-container"></div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn-secondary" onclick="autofillData('menuitem')" style="color:var(--brand); border-color:var(--brand);">
+                    🪄 Autofill
+                  </button>
+                  <button type="button" class="btn-secondary" onclick="resetMenuItemForm()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.31"/></svg>
+                    Reset
+                  </button>
+                  <button type="submit" class="btn-primary" id="btn-menuitem-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span class="btn-label">Add Menu Item</span>
+                    <span class="btn-spinner hidden" id="spinner-menuitem"></span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- RIGHT SIDEBAR CARD -->
+          <div class="form-aside">
+            <div class="card tips-card">
+              <h3 class="tips-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Quick Tips
+              </h3>
+              <ul class="tips-list">
+                <li>Item name must be unique within the same restaurant.</li>
+                <li>Label examples: <em>Bestseller</em>, <em>Must Try</em>, <em>New</em>.</li>
+                <li>Select VEG or NON-VEG carefully — this affects how the item is shown to customers.</li>
+                <li>Variants let you add sizes (Small, Medium, Large) with different prices.</li>
+                <li>Enable "Manage Inventory" on a variant to track stock count.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE: MANAGE USERS -->
+    <section class="page" id="page-user">
+      <div class="page-header" style="margin-top: 24px;">
+        <h2 class="page-title">Manage Users</h2>
+        <p class="page-desc">Add and remove users on the Zomato platform.</p>
+      </div>
+
+      <!-- Add User Form -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0; font-size:1.1rem;">&#10133; Add New User</h3>
+          <button type="button" onclick="autofillData('user')" style="font-size:0.75rem; color:var(--brand); background:var(--bg-base); border:1px solid var(--brand); border-radius:8px; padding:4px 12px; cursor:pointer; font-weight:600;">🪄 Autofill</button>
+        </div>
+        <form id="form-user" onsubmit="event.preventDefault(); validateUser();">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="u-name">User Name <span class="required">*</span></label>
+              <input type="text" id="u-name" class="form-input" placeholder="e.g. John Doe" />
+              <div class="error-msg" id="err-u-name"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="u-email">User Email <span class="required">*</span></label>
+              <input type="email" id="u-email" class="form-input" placeholder="e.g. john@example.com" />
+              <div class="error-msg" id="err-u-email"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="u-phone">Phone Number <span class="required">*</span></label>
+              <input type="text" id="u-phone" class="form-input" placeholder="e.g. 9876543210" />
+              <div class="error-msg" id="err-u-phone"></div>
+            </div>
+          </div>
+          <button type="submit" id="btn-user-submit" class="btn-primary" style="margin-top: 16px;">
+            <span class="btn-label">Create User</span>
+            <span class="btn-spinner hidden" id="spinner-user"></span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Session User List -->
+      <div class="card" style="margin-top: 24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0; font-size:1.1rem;">&#128101; All Users</h3>
+          <button onclick="fetchAllUsers()" style="font-size:0.75rem; color:var(--brand); background:var(--bg-base); border:1px solid var(--border); border-radius:8px; padding:4px 12px; cursor:pointer; font-weight:600;">&#8635; Refresh</button>
+        </div>
+        <div id="session-users-list">
+          <div id="session-users-empty" style="text-align:center; padding:32px; color:var(--text-muted); font-size:0.9rem;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px; opacity:0.4; display:block; margin-left:auto; margin-right:auto;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            No users added in this session yet. Create one above.
+          </div>
+          <table id="session-users-table" style="display:none; width:100%; border-collapse:collapse; font-size:0.85rem;">
+            <thead>
+              <tr style="background:var(--bg-base); border-bottom:2px solid var(--border);">
+                <th style="padding:10px 14px; text-align:left; font-weight:700; color:var(--text-muted);">ID</th>
+                <th style="padding:10px 14px; text-align:left; font-weight:700; color:var(--text-muted);">Name</th>
+                <th style="padding:10px 14px; text-align:left; font-weight:700; color:var(--text-muted);">Email</th>
+                <th style="padding:10px 14px; text-align:left; font-weight:700; color:var(--text-muted);">Phone</th>
+                <th style="padding:10px 14px; text-align:left; font-weight:700; color:var(--text-muted);">Action</th>
+              </tr>
+            </thead>
+            <tbody id="session-users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Delete User by ID -->
+      <div class="card" style="margin-top: 24px; border-left: 4px solid var(--red);">
+        <h3 style="margin-top:0; font-size:1.1rem; margin-bottom:6px; color:var(--red);">&#128465;&#65039; Delete User by ID</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin:0 0 16px 0;">
+          Enter any User ID to delete them permanently from the database.
+        </p>
+        <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="form-group" style="margin:0; flex:1; min-width:160px;">
+            <label class="form-label" for="u-delete-id">User ID <span class="required">*</span></label>
+            <input type="number" id="u-delete-id" class="form-input" placeholder="e.g. 3" min="1" />
+            <div class="error-msg" id="err-u-delete-id"></div>
+          </div>
+          <button type="button" id="btn-delete-user" onclick="deleteUserApi()" style="background:var(--red); color:#fff; border:none; border-radius:10px; padding:11px 22px; font-weight:700; font-size:0.85rem; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:8px;">
+            <span id="label-delete-user">Delete User</span>
+            <span class="btn-spinner hidden" id="spinner-delete-user"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- EDIT MENU ITEM MODAL -->
+  <div id="edit-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border-radius:16px; padding:32px; width:100%; max-width:480px; margin:16px; box-shadow:0 24px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <h2 style="font-size:1.2rem; font-weight:700; color:var(--text-base); margin:0;">✏️ Edit Menu Item</h2>
+        <button onclick="closeEditModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted); line-height:1;">&times;</button>
+      </div>
+
+      <input type="hidden" id="edit-menu-item-id" />
+      <input type="hidden" id="edit-restaurant-id" />
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label for="edit-m-name">Item Name</label>
+        <input type="text" id="edit-m-name" placeholder="e.g. Butter Chicken" autocomplete="off" />
+        <span class="field-error" id="err-edit-m-name"></span>
+      </div>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label for="edit-m-description">Description</label>
+        <input type="text" id="edit-m-description" placeholder="Short description..." autocomplete="off" />
+        <span class="field-error" id="err-edit-m-description"></span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div class="form-group">
+          <label for="edit-m-type">Type</label>
+          <select id="edit-m-type">
+            <option value="VEG">🟢 VEG</option>
+            <option value="NONVEG">🔴 NON-VEG</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-m-label">Label</label>
+          <input type="text" id="edit-m-label" placeholder="e.g. Bestseller" autocomplete="off" />
+          <span class="field-error" id="err-edit-m-label"></span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:24px;">
+        <button type="button" class="btn-secondary" onclick="closeEditModal()" style="flex:1;">Cancel</button>
+        <button type="button" id="btn-edit-submit" onclick="submitEditMenuItem()" class="btn-primary" style="flex:2;">
+          <span class="btn-label">Save Changes</span>
+          <span class="btn-spinner hidden" id="spinner-edit"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT MENU ITEM VARIANT MODAL -->
+  <div id="edit-variant-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border-radius:16px; padding:32px; width:100%; max-width:480px; margin:16px; box-shadow:0 24px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <h2 id="edit-variant-modal-title" style="font-size:1.2rem; font-weight:700; color:var(--text-base); margin:0;">🏷️ Edit Variant</h2>
+        <button onclick="closeEditVariantModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted); line-height:1;">&times;</button>
+      </div>
+
+      <input type="hidden" id="edit-variant-id" />
+      <input type="hidden" id="edit-variant-menu-item-id" />
+      <input type="hidden" id="edit-variant-restaurant-id" />
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label for="edit-v-name">Variant Name</label>
+        <input type="text" id="edit-v-name" placeholder="e.g. Large / Half Plate" autocomplete="off" />
+        <span class="field-error" id="err-edit-v-name"></span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div class="form-group">
+          <label for="edit-v-price">Price (₹)</label>
+          <input type="number" id="edit-v-price" step="0.01" placeholder="250.00" />
+          <span class="field-error" id="err-edit-v-price"></span>
+        </div>
+        <div class="form-group">
+          <label for="edit-v-available">Availability</label>
+          <select id="edit-v-available">
+            <option value="true">Available</option>
+            <option value="false">Unavailable</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div class="form-group">
+          <label for="edit-v-managed">Inventory Managed</label>
+          <select id="edit-v-managed" onchange="toggleEditVariantInventory()">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-v-count">Stock Count</label>
+          <input type="number" id="edit-v-count" placeholder="50" min="0" />
+          <span class="field-error" id="err-edit-v-count"></span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:24px;">
+        <button type="button" class="btn-secondary" onclick="closeEditVariantModal()" style="flex:1;">Cancel</button>
+        <button type="button" id="btn-edit-variant-submit" onclick="submitEditVariant()" class="btn-primary" style="flex:2;">
+          <span class="btn-label" id="edit-variant-submit-label">Save Variant</span>
+          <span class="btn-spinner hidden" id="spinner-edit-variant"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- EDIT RESTAURANT MODAL -->
+  <div id="edit-restaurant-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border-radius:16px; padding:32px; width:100%; max-width:480px; margin:16px; box-shadow:0 24px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; max-height:90vh; overflow-y:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <h2 style="font-size:1.2rem; font-weight:700; color:var(--text-base); margin:0;">🏪 Edit Restaurant</h2>
+        <button onclick="closeEditRestaurantModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted); line-height:1;">&times;</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Restaurant Name</label><input type="text" id="er-name" /></div>
+        <div class="form-group"><label>Phone Number</label><input type="text" id="er-phone" /></div>
+        <div class="form-group"><label>Street Line 1</label><input type="text" id="er-street1" /></div>
+        <div class="form-group"><label>Street Line 2</label><input type="text" id="er-street2" /></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="form-group"><label>Pincode</label><input type="text" id="er-pin" /></div>
+          <div class="form-group"><label>State</label><input type="text" id="er-state" /></div>
+        </div>
+        <div class="form-group"><label>Country</label><input type="text" id="er-country" /></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="form-group"><label>Latitude</label><input type="number" id="er-lat" step="0.000001" /></div>
+          <div class="form-group"><label>Longitude</label><input type="number" id="er-lng" step="0.000001" /></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:24px;">
+        <button type="button" class="btn-secondary" onclick="closeEditRestaurantModal()" style="flex:1;">Cancel</button>
+        <button type="button" onclick="submitEditRestaurant()" class="btn-primary" style="flex:2;">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT USER MODAL -->
+  <div id="edit-user-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:var(--bg-card); border-radius:16px; padding:32px; width:100%; max-width:400px; margin:16px; box-shadow:0 24px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <h2 style="font-size:1.2rem; font-weight:700; color:var(--text-base); margin:0;">👤 Edit User</h2>
+        <button onclick="closeEditUserModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted); line-height:1;">&times;</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Name</label><input type="text" id="eu-name" /></div>
+        <div class="form-group"><label>Email</label><input type="email" id="eu-email" /></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="eu-phone" /></div>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:24px;">
+        <button type="button" class="btn-secondary" onclick="closeEditUserModal()" style="flex:1;">Cancel</button>
+        <button type="button" onclick="submitEditUser()" class="btn-primary" style="flex:2;">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADD ADDRESS MODAL ── -->
+  <div id="add-address-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:var(--bg-card); border-radius:20px; padding:32px; width:100%; max-width:520px; box-shadow:0 24px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; max-height:90vh; overflow-y:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <h2 id="add-address-modal-title" style="font-size:1.2rem; font-weight:700; color:var(--text-base); margin:0;">📍 Add Address</h2>
+        <button onclick="closeAddAddressModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted); line-height:1;">&times;</button>
+      </div>
+      <form id="form-add-address" onsubmit="event.preventDefault(); submitAddAddress();">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Street Line 1 <span style="color:var(--red)">*</span></label>
+            <input type="text" id="aa-street1" placeholder="e.g. 12 MG Road" />
+            <span class="form-error" id="err-aa-street1"></span>
+          </div>
+          <div class="form-group">
+            <label>Street Line 2 <span style="color:var(--text-dim); font-weight:400;">(optional)</span></label>
+            <input type="text" id="aa-street2" placeholder="e.g. Near City Mall" />
+          </div>
+          <div class="form-group">
+            <label>Pin Code <span style="color:var(--red)">*</span></label>
+            <input type="text" id="aa-pin" placeholder="e.g. 110001" maxlength="6" />
+            <span class="form-error" id="err-aa-pin"></span>
+          </div>
+          <div class="form-group">
+            <label>State <span style="color:var(--red)">*</span></label>
+            <input type="text" id="aa-state" placeholder="e.g. Delhi" />
+            <span class="form-error" id="err-aa-state"></span>
+          </div>
+          <div class="form-group">
+            <label>Country <span style="color:var(--red)">*</span></label>
+            <input type="text" id="aa-country" placeholder="e.g. India" value="India" />
+            <span class="form-error" id="err-aa-country"></span>
+          </div>
+          <div class="form-group">
+            <label>Latitude <span style="color:var(--red)">*</span></label>
+            <input type="number" id="aa-lat" placeholder="e.g. 28.6139" step="any" />
+            <span class="form-error" id="err-aa-lat"></span>
+          </div>
+          <div class="form-group">
+            <label>Longitude <span style="color:var(--red)">*</span></label>
+            <input type="number" id="aa-lng" placeholder="e.g. 77.2090" step="any" />
+            <span class="form-error" id="err-aa-lng"></span>
+          </div>
+          <div class="form-group">
+            <label>Address Type <span style="color:var(--red)">*</span></label>
+            <input type="text" id="aa-type" placeholder="e.g. Home, Office, Other" />
+            <span class="form-error" id="err-aa-type"></span>
+          </div>
+          <div class="form-group">
+            <label>Set as Default? <span style="color:var(--red)">*</span></label>
+            <select id="aa-default" style="width:100%; padding:10px 14px; border:1px solid var(--border-input); border-radius:10px; font-size:0.95rem; background:var(--bg-base); color:var(--text-base);">
+              <option value="true">Yes — Set as default</option>
+              <option value="false">No — Additional address</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:24px;">
+          <button type="button" class="btn-secondary" onclick="closeAddAddressModal()" style="flex:1;">Cancel</button>
+          <button type="submit" id="btn-add-address-submit" class="btn-primary" style="flex:2;">Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app_v2.js"></script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foodie — Login & Access Control</title>
+  <meta name="description" content="Login to Foodie — Customer & Admin Partner Portal." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand: #CB202D;
+      --brand-hover: #B81B27;
+      --brand-light: #FFF0F1;
+      --text: #1C1C1C;
+      --text-muted: #696969;
+      --border: #E8E8E8;
+      --radius: 14px;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1C1C1C 0%, #2A2A2A 50%, #CB202D 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: var(--text);
+    }
+    .auth-card {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      width: 100%;
+      max-width: 460px;
+      border-radius: 24px;
+      padding: 40px 36px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .logo-text {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--brand);
+      font-style: italic;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+    .sub-title {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 8px;
+    }
+
+    /* Role Selector Pills */
+    .role-selector {
+      display: flex;
+      background: #F4F4F5;
+      padding: 5px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      gap: 4px;
+    }
+    .role-btn {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .role-btn.active {
+      background: white;
+      color: var(--brand);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Auth Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--brand);
+    }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--brand);
+      border-radius: 2px;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(203, 32, 45, 0.1);
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 8px;
+      box-shadow: 0 4px 16px rgba(203, 32, 45, 0.3);
+    }
+    .submit-btn:hover {
+      background: var(--brand-hover);
+    }
+    .submit-btn:active {
+      transform: scale(0.99);
+    }
+
+    /* Quick Demo Login Box */
+    .demo-box {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px dashed var(--border);
+      text-align: center;
+    }
+    .demo-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+    .demo-btn-group {
+      display: flex;
+      gap: 10px;
+    }
+    .demo-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      background: white;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .demo-btn:hover {
+      border-color: var(--brand);
+      background: var(--brand-light);
+      color: var(--brand);
+    }
+    .alert-banner {
+      background: #FFF0F1;
+      border: 1.5px solid #FFCDD2;
+      color: var(--brand);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div class="brand-header">
+      <div class="logo-text">foodie</div>
+      <div class="sub-title" id="role-subtitle">Role-Based Access Control (RBAC) Portal</div>
+    </div>
+
+    <!-- Alert Notification -->
+    <div id="alert-banner" class="alert-banner"></div>
+
+    <!-- Role Selection Pill -->
+    <div class="role-selector">
+      <button class="role-btn active" id="role-customer-btn" onclick="selectRole('CUSTOMER')">
+        🍔 Customer (User)
+      </button>
+      <button class="role-btn" id="role-admin-btn" onclick="selectRole('ADMIN')">
+        🛠️ Admin Partner
+      </button>
+    </div>
+
+    <!-- Tabs: Login vs Signup -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Log In</button>
+      <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form" onsubmit="handleAuthSubmit(event)">
+      <div class="form-group" id="name-group" style="display: none;">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="auth-name" class="form-input" placeholder="e.g. Maruthi Praveen" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="auth-email" class="form-input" placeholder="e.g. user@foodie.com" required />
+      </div>
+
+      <div class="form-group" id="phone-group" style="display: none;">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" id="auth-phone" class="form-input" placeholder="e.g. 9876543210" />
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label class="form-label" style="margin-bottom: 0;">Password</label>
+          <span style="font-size: 0.75rem; color: #888;">Default: user123 / admin123</span>
+        </div>
+        <input type="password" id="auth-password" class="form-input" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-btn-text">Log In as Customer</button>
+    </form>
+
+    <!-- Instant 1-Click Demo Login -->
+    <div class="demo-box">
+      <div class="demo-title">⚡ Instant Demo 1-Click Login</div>
+      <div class="demo-btn-group">
+        <button class="demo-btn" onclick="quickLogin('customer@foodie.com', 'user123', 'CUSTOMER')">
+          <span>🍔 Customer Demo</span>
+          <small style="color: #888; font-weight: 500;">pw: user123</small>
+        </button>
+        <button class="demo-btn" onclick="quickLogin('admin@foodie.com', 'admin123', 'ADMIN')">
+          <span>🛠️ Admin Partner</span>
+          <small style="color: #888; font-weight: 500;">pw: admin123</small>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    let currentRole = 'CUSTOMER';
+    let currentMode = 'login';
+
+    // Parse URL params for notifications
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const msg = urlParams.get('msg');
+      const alertBanner = document.getElementById('alert-banner');
+      
+      if (msg === 'please_login') {
+        alertBanner.innerText = '🔒 Please log in to access your account.';
+        alertBanner.style.display = 'block';
+      } else if (msg === 'admin_required') {
+        alertBanner.innerText = '⛔ Access Denied: Admin privileges required!';
+        alertBanner.style.display = 'block';
+      }
+    });
+
+    function selectRole(role) {
+      currentRole = role;
+      document.getElementById('role-customer-btn').classList.toggle('active', role === 'CUSTOMER');
+      document.getElementById('role-admin-btn').classList.toggle('active', role === 'ADMIN');
+      updateUI();
+    }
+
+    function switchTab(mode) {
+      currentMode = mode;
+      document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+      document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+      
+      document.getElementById('name-group').style.display = mode === 'signup' ? 'block' : 'none';
+      document.getElementById('phone-group').style.display = mode === 'signup' ? 'block' : 'none';
+      updateUI();
+    }
+
+    function updateUI() {
+      const roleName = currentRole === 'ADMIN' ? 'Admin Partner' : 'Customer';
+      const actionName = currentMode === 'login' ? 'Log In' : 'Sign Up';
+      document.getElementById('submit-btn-text').innerText = `${actionName} as ${roleName}`;
+      document.getElementById('role-subtitle').innerText = `Accessing as: ${roleName}`;
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const alertBanner = document.getElementById('alert-banner');
+      alertBanner.style.display = 'none';
+
+      const email = document.getElementById('auth-email').value.trim();
+      const name = document.getElementById('auth-name').value.trim();
+      const phone = document.getElementById('auth-phone').value.trim();
+      const password = document.getElementById('auth-password').value.trim();
+
+      let res;
+      if (currentMode === 'login') {
+        res = Auth.login(email, password, currentRole);
+      } else {
+        res = Auth.signup(name, email, phone, password, currentRole);
+      }
+
+      if (res && res.success) {
+        Auth.redirectByRole(currentRole);
+      } else {
+        alertBanner.innerText = res.message || '❌ Login failed. Please check your credentials.';
+        alertBanner.style.display = 'block';
+      }
+    }
+
+    function quickLogin(email, password, role) {
+      const res = Auth.login(email, password, role);
+      if (res && res.success) {
+        Auth.redirectByRole(role);
+      } else {
+        const alertBanner = document.getElementById('alert-banner');
+        alertBanner.innerText = res.message || '❌ Login failed.';
+        alertBanner.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
